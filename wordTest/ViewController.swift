@@ -30,27 +30,35 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     @IBAction func handleShowPaths(_ sender: Any) {
         
-        //check for this if
-        //if(!pointsArray.isEmpty && pointsArray.count > 1)
-        /*for index in 0..<pointsArray.count {
-            
-            if(index+1 < pointsArray.count){
-                let line = SCNGeometry.line(from: pointsArray[index] , to: pointsArray[index+1])
-               
-                line.firstMaterial?.diffuse.contents = UIColor.red
-                
-                let lineNode = SCNNode(geometry: line)
-                self.ARView.scene.rootNode.addChildNode(lineNode)
-            }
-        }*/
     
-        
         for index in 0..<pointsArray.count {
          
          if(index+1 < pointsArray.count){
-            let line = SCNNode.lineNode(from: pointsArray[index] , to: pointsArray[index+1])//, radius: 1.0)
-             
-         self.ARView.scene.rootNode.addChildNode(line)
+            let distancePieces =  integer_t(((distanceBetweenVectors(v1: pointsArray[index], v2: pointsArray[index+1]))/0.5).rounded(.up)) //there is also a fuction named "distanceBetweenVectors"
+            print(distancePieces)
+            var i = 0
+            var lerp = SCNVector3Zero
+            var line = SCNNode.lineNode(from: pointsArray[index] , to: lerp)
+            var fIndex = pointsArray[index]
+            while(i < distancePieces)
+            {
+                
+                 lerp = fIndex.lerp(toVector: pointsArray[index+1], t: 1)
+                print(lerp)
+                 line = SCNNode.lineNode(from: fIndex , to: lerp)//, radius: 1.0)
+                
+                self.ARView.scene.rootNode.addChildNode(line)
+                fIndex = lerp
+                i = i+1
+                
+                
+            }
+            lerp = fIndex.lerp(toVector: pointsArray[index+1], t: 1)
+            line = SCNNode.lineNode(from: lerp , to: pointsArray[index+1])//, radius: 1.0)
+            
+            self.ARView.scene.rootNode.addChildNode(line)
+
+            
          }
          }
     }
@@ -93,11 +101,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         let material = SCNMaterial()
         material.diffuse.contents = UIColor.green
         text.materials = [material]
-        
+       
         let node = SCNNode()
         node.position = currentPositionOfCamera// SCNVector3(x:-0.2,y:-0.1,z:-0.1)
         node.scale = SCNVector3(x:0.01,y:0.01,z:0.01)
         node.geometry = text
+        let eulerAngles = self.ARView.session.currentFrame?.camera.eulerAngles
+        node.eulerAngles = SCNVector3(eulerAngles!.x, eulerAngles!.y, eulerAngles!.z + .pi / 2)
+    
         
         //notification
         let content = UNMutableNotificationContent()
@@ -153,7 +164,7 @@ extension SCNGeometry {
 
 
 extension SCNNode {
-    static func lineNode(from: SCNVector3, to: SCNVector3, radius: CGFloat = 0.01) -> SCNNode {
+    static func lineNode(from: SCNVector3, to: SCNVector3, radius: CGFloat = 0.05) -> SCNNode {
         let vector = to - from
         let height = vector.length
         let cylinder = SCNCylinder(radius: radius, height: CGFloat(height))
