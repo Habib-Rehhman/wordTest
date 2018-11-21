@@ -265,4 +265,21 @@ func randomSCNVector3(rangeX:Float, rangeY:Float, rangeZ:Float) -> SCNVector3 {
         z: Float(arc4random()%UInt32(rangeZ)))
 }
 
+func SCNVector3DotProduct(_ left: SCNVector3, right: SCNVector3) -> Float {
+    return left.x * right.x + left.y * right.y + left.z * right.z
+}
+
+func SCNVector3Project(vectorToProject: SCNVector3, projectionVector: SCNVector3) -> SCNVector3 {
+    let scale: Float = SCNVector3DotProduct(projectionVector, right: vectorToProject) / SCNVector3DotProduct(projectionVector, right: projectionVector)
+    let v: SCNVector3 = projectionVector * scale
+    return v
+}
+
+func SCNVector3ProjectPlane(vector: SCNVector3, planeNormal: SCNVector3 ) -> SCNVector3 {
+    
+    let projection = SCNVector3Project(vectorToProject: vector, projectionVector: planeNormal)
+    
+    return ( vector - projection )
+}
+
 

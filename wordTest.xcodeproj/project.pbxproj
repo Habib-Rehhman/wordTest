@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E222AE3C21A2ABE60011258E /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = E222AE3B21A2ABE60011258E /* Tag.swift */; };
 		E246561021982694009785D4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246560F21982694009785D4 /* AppDelegate.swift */; };
 		E246561221982694009785D4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246561121982694009785D4 /* ViewController.swift */; };
 		E246561521982694009785D4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E246561321982694009785D4 /* Main.storyboard */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E222AE3B21A2ABE60011258E /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		E246560C21982693009785D4 /* wordTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = wordTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E246560F21982694009785D4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E246561121982694009785D4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -61,6 +63,7 @@
 				E246561621982694009785D4 /* Assets.xcassets */,
 				E246561821982695009785D4 /* LaunchScreen.storyboard */,
 				E2864D9C21993F63007B93FD /* Extentions.swift */,
+				E222AE3B21A2ABE60011258E /* Tag.swift */,
 			);
 			path = wordTest;
 			sourceTree = "<group>";
@@ -136,6 +139,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E222AE3C21A2ABE60011258E /* Tag.swift in Sources */,
 				E246561221982694009785D4 /* ViewController.swift in Sources */,
 				E246561021982694009785D4 /* AppDelegate.swift in Sources */,
 				E2864D9D21993F63007B93FD /* Extentions.swift in Sources */,
@@ -215,7 +219,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -270,7 +274,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
