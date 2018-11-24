@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		E222AE3C21A2ABE60011258E /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = E222AE3B21A2ABE60011258E /* Tag.swift */; };
+		E22BA69F21A827530070EC38 /* LocationTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = E22BA69E21A827530070EC38 /* LocationTag.swift */; };
 		E246561021982694009785D4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246560F21982694009785D4 /* AppDelegate.swift */; };
 		E246561221982694009785D4 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246561121982694009785D4 /* ViewController.swift */; };
 		E246561521982694009785D4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E246561321982694009785D4 /* Main.storyboard */; };
@@ -18,6 +19,7 @@
 
 /* Begin PBXFileReference section */
 		E222AE3B21A2ABE60011258E /* Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
+		E22BA69E21A827530070EC38 /* LocationTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationTag.swift; sourceTree = "<group>"; };
 		E246560C21982693009785D4 /* wordTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = wordTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E246560F21982694009785D4 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E246561121982694009785D4 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -64,6 +66,7 @@
 				E246561821982695009785D4 /* LaunchScreen.storyboard */,
 				E2864D9C21993F63007B93FD /* Extentions.swift */,
 				E222AE3B21A2ABE60011258E /* Tag.swift */,
+				E22BA69E21A827530070EC38 /* LocationTag.swift */,
 			);
 			path = wordTest;
 			sourceTree = "<group>";
@@ -140,6 +143,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E222AE3C21A2ABE60011258E /* Tag.swift in Sources */,
+				E22BA69F21A827530070EC38 /* LocationTag.swift in Sources */,
 				E246561221982694009785D4 /* ViewController.swift in Sources */,
 				E246561021982694009785D4 /* AppDelegate.swift in Sources */,
 				E2864D9D21993F63007B93FD /* Extentions.swift in Sources */,

@@ -10,6 +10,7 @@ import UIKit
 import ARKit
 import SceneKit
 import UserNotifications
+import GameplayKit
 
 class ViewController: UIViewController, ARSCNViewDelegate {
     // MARK: Properties
@@ -17,6 +18,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet weak var ARView: ARSCNView!
    //declare variable
     var i = 0;
+    
+    
     var currentPositionOfCamera: SCNVector3
     {
         get{
@@ -30,6 +33,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     //  var pointsDic: [String: [SCNVector3]] = [:]
     var pointsDic: [String: SCNVector3] = [:]
     var pointsArray: [SCNVector3] = []
+    var tagArray: [LocationTag] = []
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -43,32 +47,64 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         //This block removes previous arrows
         self.ARView.scene.rootNode.enumerateChildNodes { (node, stop) in
-            if (node.name != nil && node.name!.elementsEqual("arrow")){
+            if (node.name != nil && (node.name!.elementsEqual("arrow") || node.name!.elementsEqual("cam"))){
             node.removeFromParentNode()
                 
             }
         }
-        
+        let tagGraph = GKGraph()
         //This block adds new arrows
          if(pointsDic.count>0){
-          
-          //drawPath(from:  currentPositionOfCamera, to: pointsDic.first!.value) //Draw using Dictionary
-            drawPath(from:  currentPositionOfCamera, to: pointsArray[0])    // Draw using array
-          let arr = Array(pointsDic)
-          
-           if(arr.count>1)
-           {
-            for indx in arr.startIndex ..< arr.endIndex-1{
+            tagArray.append(LocationTag(name: "cam", point: SCNVector3Make(currentPositionOfCamera.x, currentPositionOfCamera.y, currentPositionOfCamera.z)))
+           
+            let nearest = calculateNearestNode(cam: tagArray[tagArray.count-1].point)
+                tagArray[tagArray.count-1].addConnection(to: nearest, bidirectional: true, weight: distanceBetweenVectors(v1: tagArray[tagArray.count-1].point, v2: nearest.point))
             
-                //drawPath(from: arr[indx].value , to: arr[indx+1].value)
-                drawPath(from: pointsArray[indx] , to: pointsArray[indx+1])
-                
-               // print("\(arr[indx].key) -> \(arr[indx+1].key)")
+            tagGraph.add(tagArray)
+            var path = tagGraph.findPath(from: tagArray[tagArray.count-1], to: tagArray[2]) //will crash if the length is less then 3
+           for p in 0 ..< path.count-1 {
+            
+            print("\((path[p] as! LocationTag).name) -> \((path[p+1] as! LocationTag).name), Edge Cost: ")
+            
             }
+            printCost(for: path)
+            for p in 0 ..< path.count-1{
+                
+                drawPath(from: (path[p] as! LocationTag).point , to: (path[p+1] as! LocationTag).point)
+            }
+          //drawPath(from:  currentPositionOfCamera, to: pointsDic.first!.value) //Draw using Dictionary
+          //  drawPath(from:  currentPositionOfCamera, to: pointsArray[0])    // Draw using array
+//          let arr = Array(pointsDic)
+//
+//           if(arr.count>1)
+//           {
+//            for indx in arr.startIndex ..< arr.endIndex-1{
+//
+//                //drawPath(from: arr[indx].value , to: arr[indx+1].value)
+//                drawPath(from: pointsArray[indx] , to: pointsArray[indx+1])
+//
+//               // print("\(arr[indx].key) -> \(arr[indx+1].key)")
+//            }
+//        }
+    }
+    }
+    func calculateNearestNode(cam: SCNVector3) -> LocationTag
+    {
+        var nearest = distanceBetweenVectors(v1: tagArray[0].point, v2: cam)
+        var dis: Float
+        var haveIndx = 0
+        for i in 1 ..< tagArray.count-1
+        {
+             dis = distanceBetweenVectors(v1: tagArray[i].point, v2: cam)
+            if(dis < nearest){
+                
+                haveIndx = i
+                nearest = dis
+            }
+          
         }
+        return tagArray[haveIndx]
     }
-    }
-    
     func drawPath(from: SCNVector3, to: SCNVector3)// tag: String)
     {
         let distancePieces =  integer_t(((distanceBetweenVectors(v1: from, v2: to))/0.15).rounded(.up))
@@ -110,6 +146,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     @IBAction func updateAct(_ sender: Any) {
       
+        
         let showText=self.inputText!.text!
         if(showText.isEmpty)
         {
@@ -129,6 +166,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 //        pointsDic[showText]![0] = SCNVector3Make(currentPositionOfCamera.x, currentPositionOfCamera.y-1.5, currentPositionOfCamera.z)
         
         pointsDic[showText] = SCNVector3Make(currentPositionOfCamera.x, currentPositionOfCamera.y-1, currentPositionOfCamera.z)
+        tagArray.append(LocationTag(name: showText, point: SCNVector3Make(currentPositionOfCamera.x, currentPositionOfCamera.y-1, currentPositionOfCamera.z)))
+        for ind in 0 ..< tagArray.count{
+            
+            for innerInd in ind ..< tagArray.count-1{
+                
+                tagArray[innerInd].addConnection(to: tagArray[innerInd+1], bidirectional: true, weight: distanceBetweenVectors(v1: tagArray[innerInd].point, v2: tagArray[innerInd+1].point))
+            }
+        }
         i = i+1;
         let text = SCNText(string: showText, extrusionDepth: 1)
         print("not returned")
@@ -161,8 +206,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
       
     
     }
-   
-    
+
     
     func session(_ session: ARSession, didFailWithError error: Error) {
         // Present an error message to the user
@@ -180,89 +224,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
     
     
-
-
-
-/*extension SCNNode {
-    static func lineNode(from: SCNVector3, to: SCNVector3, radius: CGFloat = 0.05) -> SCNNode {
-        let vector = to - from
-        let height = vector.length
-        let cylinder = SCNCylinder(radius: radius, height: CGFloat(height))
-        cylinder.radialSegmentCount = 4
-        cylinder.firstMaterial?.diffuse.contents = UIImage(named: "Arrow")//UIColor.red
-        let node = SCNNode(geometry: cylinder)
-        node.position = (to + from) / 2
-        node.eulerAngles = SCNVector3.lineEulerAngles(vector: vector)
-        
-        return node
-    }
-}
-
-extension Int {
-    
-    var degreesToRadians: Double { return Double(self) * .pi/180}
-}
-
-
-
-//quad
-
-extension SCNGeometry {
-    
-    class func Quad(from: SCNVector3, to: SCNVector3) -> SCNGeometry {
-        
-         
-        
-        let rightPointOfFrom = from.lerp(toVector: SCNVector3(0,0,from.z-2), t: 0.2)
-        let leftPointOfFrom = from.lerp(toVector: SCNVector3(0,0,from.z+2), t: 0.2)
-        
-        let rightPointOfTo = to.lerp(toVector: SCNVector3(0,0,to.z-2), t: 0.2)
-        let leftPointOfTo = to.lerp(toVector: SCNVector3(0,0,to.z+2), t: 0.2)
-        
-        let verticesPosition = [
-//            SCNVector3(x: -0.242548823, y: -0.188490361, z: -0.0887458622),
-//            SCNVector3(x: -0.129298389, y: -0.188490361, z: -0.0820985138),
-//            SCNVector3(x: -0.129298389, y: 0.2, z: -0.0820985138),
-//            SCNVector3(x: -0.242548823, y: 0.2, z: -0.0887458622)
-            
-            rightPointOfFrom, leftPointOfFrom
-            ,rightPointOfTo
-            ,leftPointOfTo
-           
-            
-            
-        ]
-        
-        let textureCord = [
-            CGPoint(x: 1, y: 1),
-            CGPoint(x: 0, y: 1),
-            CGPoint(x: 0, y: 0),
-            CGPoint(x: 1, y: 0),
-            ]
-        
-        let indices: [CInt] = [
-            0, 2, 3,
-            0, 1, 2
-        ]
-        
-        let vertexSource = SCNGeometrySource(vertices: verticesPosition)
-        let srcTex = SCNGeometrySource(textureCoordinates: textureCord)
-        let date = NSData(bytes: indices, length: MemoryLayout<CInt>.size * indices.count)
-        
-        let scngeometry = SCNGeometryElement(data: date as Data,
-                                             primitiveType: SCNGeometryPrimitiveType.triangles, primitiveCount: 2,
-                                             bytesPerIndex: MemoryLayout<CInt>.size)
-        
-        let geometry = SCNGeometry(sources: [vertexSource,srcTex],
-                                   elements: [scngeometry])
-        
-        return geometry
-        
-        
-    }
-    
-}
-*/
 
 class LineNode: SCNNode
 {
@@ -315,3 +276,5 @@ class LineNode: SCNNode
         return CGFloat(l)
     }
 }
+
+
