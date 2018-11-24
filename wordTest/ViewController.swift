@@ -16,10 +16,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     // MARK: Properties
     @IBOutlet weak var inputText: UITextField!
     @IBOutlet weak var ARView: ARSCNView!
-   //declare variable
-    var i = 0;
-    
-    
+
     var currentPositionOfCamera: SCNVector3
     {
         get{
@@ -30,9 +27,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             return orientation + location
         }
     }
-    //  var pointsDic: [String: [SCNVector3]] = [:]
-    var pointsDic: [String: SCNVector3] = [:]
-    var pointsArray: [SCNVector3] = []
+
     var tagArray: [LocationTag] = []
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,38 +49,21 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         }
         let tagGraph = GKGraph()
         //This block adds new arrows
-         if(pointsDic.count>0){
+         if(tagArray.count>0){
+            tagGraph.add(tagArray)
             tagArray.append(LocationTag(name: "cam", point: SCNVector3Make(currentPositionOfCamera.x, currentPositionOfCamera.y, currentPositionOfCamera.z)))
            
             let nearest = calculateNearestNode(cam: tagArray[tagArray.count-1].point)
                 tagArray[tagArray.count-1].addConnection(to: nearest, bidirectional: true, weight: distanceBetweenVectors(v1: tagArray[tagArray.count-1].point, v2: nearest.point))
             
-            tagGraph.add(tagArray)
+            
             var path = tagGraph.findPath(from: tagArray[tagArray.count-1], to: tagArray[2]) //will crash if the length is less then 3
            for p in 0 ..< path.count-1 {
             
             print("\((path[p] as! LocationTag).name) -> \((path[p+1] as! LocationTag).name), Edge Cost: ")
+              drawPath(from: (path[p] as! LocationTag).point , to: (path[p+1] as! LocationTag).point)
             
             }
-            printCost(for: path)
-            for p in 0 ..< path.count-1{
-                
-                drawPath(from: (path[p] as! LocationTag).point , to: (path[p+1] as! LocationTag).point)
-            }
-          //drawPath(from:  currentPositionOfCamera, to: pointsDic.first!.value) //Draw using Dictionary
-          //  drawPath(from:  currentPositionOfCamera, to: pointsArray[0])    // Draw using array
-//          let arr = Array(pointsDic)
-//
-//           if(arr.count>1)
-//           {
-//            for indx in arr.startIndex ..< arr.endIndex-1{
-//
-//                //drawPath(from: arr[indx].value , to: arr[indx+1].value)
-//                drawPath(from: pointsArray[indx] , to: pointsArray[indx+1])
-//
-//               // print("\(arr[indx].key) -> \(arr[indx+1].key)")
-//            }
-//        }
     }
     }
     func calculateNearestNode(cam: SCNVector3) -> LocationTag
@@ -160,12 +138,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
         return
         }
-        
-       
-          pointsArray.append(SCNVector3Make(currentPositionOfCamera.x, currentPositionOfCamera.y-1, currentPositionOfCamera.z))
-//        pointsDic[showText]![0] = SCNVector3Make(currentPositionOfCamera.x, currentPositionOfCamera.y-1.5, currentPositionOfCamera.z)
-        
-        pointsDic[showText] = SCNVector3Make(currentPositionOfCamera.x, currentPositionOfCamera.y-1, currentPositionOfCamera.z)
         tagArray.append(LocationTag(name: showText, point: SCNVector3Make(currentPositionOfCamera.x, currentPositionOfCamera.y-1, currentPositionOfCamera.z)))
         for ind in 0 ..< tagArray.count{
             
@@ -174,7 +146,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                 tagArray[innerInd].addConnection(to: tagArray[innerInd+1], bidirectional: true, weight: distanceBetweenVectors(v1: tagArray[innerInd].point, v2: tagArray[innerInd+1].point))
             }
         }
-        i = i+1;
         let text = SCNText(string: showText, extrusionDepth: 1)
         print("not returned")
         let material = SCNMaterial()
@@ -182,7 +153,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         text.materials = [material]
        
         let node = SCNNode()
-        node.position = currentPositionOfCamera// SCNVector3(x:-0.2,y:-0.1,z:-0.1)
+        node.position = currentPositionOfCamera
         node.scale = SCNVector3(x:0.01,y:0.01,z:0.01)
         node.geometry = text
         let eulerAngles = self.ARView.session.currentFrame?.camera.eulerAngles
@@ -254,8 +225,6 @@ class LineNode: SCNNode
         
         addChildNode(ndZAlign)
         
-//       // let eulerAngles = self.ARView!.session.currentFrame?.camera.eulerAngles
-//        ndZAlign.eulerAngles = SCNVector3(angles.x, angles.y, angles.z + .pi / 2)
         
         constraints = [SCNLookAtConstraint(target: ndV2)]
 }
